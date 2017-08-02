@@ -5,6 +5,7 @@
 
 import Foundation
 import AVFoundation
+import Photos
 
 enum QUALITY_ENUM: String {
   case QUALITY_LOW = "low"
@@ -237,10 +238,30 @@ class RNVideoTrimmer: NSObject {
       exportSession.exportAsynchronously{
           switch exportSession.status {
           case .completed:
+            if saveToCameraRoll {
+              let photoLibrary = PHPhotoLibrary.shared()
+              var videoAssetPlaceholder:PHObjectPlaceholder!
+              photoLibrary.performChanges({
+                let request = PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: outputURL)
+                videoAssetPlaceholder = request!.placeholderForCreatedAsset
+              },
+              completionHandler: { success, error in
+                if success {
+                  let localID = videoAssetPlaceholder.localIdentifier
+                  let assetID =
+                    localID.replacingOccurrences(
+                      of: "/.*", with: "",
+                      options: .regularExpression, range: nil)
+                  let ext = "mp4"
+                  let assetURLStr =
+                  "assets-library://asset/asset.\(ext)?id=\(assetID)&ext=\(ext)"
+                  
+                  callback( [NSNull(), assetURLStr] )
+                }
+              })
+            } else {
               callback( [NSNull(), outputURL.absoluteString] )
-              if saveToCameraRoll {
-                  UISaveVideoAtPathToSavedPhotosAlbum(outputURL.relativePath, self, nil, nil)
-              }
+            }
 
           case .failed:
               callback( ["Failed: \(exportSession.error)", NSNull()] )
