@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import AVFoundation
+import UIKit
 
 @objc(RNVideoProcessingManager)
 class RNVideoProcessingManager: RCTViewManager {
@@ -17,10 +19,10 @@ class RNVideoProcessingManager: RCTViewManager {
   
     @objc override func constantsToExport() -> [AnyHashable : Any]! {
         return [
-            "ScaleNone": AVLayerVideoGravityResizeAspect,
-            "ScaleToFill": AVLayerVideoGravityResize,
-            "ScaleAspectFit": AVLayerVideoGravityResizeAspect,
-            "ScaleAspectFill": AVLayerVideoGravityResizeAspectFill
+            "ScaleNone": AVLayerVideoGravity.resizeAspect,
+            "ScaleToFill": AVLayerVideoGravity.resize,
+            "ScaleAspectFit": AVLayerVideoGravity.resizeAspect,
+            "ScaleAspectFill": AVLayerVideoGravity.resizeAspectFill
         ]
     }
   
